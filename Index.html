@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo List App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f4f4f4;
+      }
+      .todo-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 400px;
+      }
+      .todo-container h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      .input-container {
+        display: flex;
+        margin-bottom: 20px;
+      }
+      .input-container input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      .input-container button {
+        margin-left: 10px;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .todo-list {
+        list-style: none;
+        padding: 0;
+      }
+      .todo-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+      }
+      .todo-list li.completed {
+        text-decoration: line-through;
+        color: #aaa;
+      }
+      .todo-list button {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .filter-container {
+        margin-top: 20px;
+        text-align: center;
+      }
+      .filter-container button {
+        margin: 0 5px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .filter-container button.active {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const { useState } = React;
+
+    function TodoApp() {
+      const [todos, setTodos] = useState([]);
+      const [newTodo, setNewTodo] = useState("");
+      const [filter, setFilter] = useState("All");
+
+      // Add a new todo item
+      const addTodo = () => {
+        if (newTodo.trim() === "") return;
+        setTodos([...todos, { text: newTodo, completed: false }]);
+        setNewTodo("");
+      };
+
+      // Toggle completion status of a todo
+      const toggleTodo = (index) => {
+        const updatedTodos = todos.map((todo, i) =>
+          i === index ? { ...todo, completed: !todo.completed } : todo
+        );
+        setTodos(updatedTodos);
+      };
+
+      // Remove a todo item
+      const removeTodo = (index) => {
+        const updatedTodos = todos.filter((_, i) => i !== index);
+        setTodos(updatedTodos);
+      };
+
+      // Filter the todos based on the selected filter
+      const filteredTodos = todos.filter((todo) => {
+        if (filter === "All") return true;
+        if (filter === "Active") return !todo.completed;
+        if (filter === "Completed") return todo.completed;
+        return true;
+      });
+
+      return (
+        <div className="todo-container">
+          <h1>Todo List</h1>
+          <div className="input-container">
+            <input
+              type="text"
+              value={newTodo}
+              onChange={(e) => setNewTodo(e.target.value)}
+              placeholder="Add a new task"
+            />
+            <button onClick={addTodo}>Add</button>
+          </div>
+          <ul className="todo-list">
+            {filteredTodos.map((todo, index) => (
+              <li key={index} className={todo.completed ? "completed" : ""}>
+                <span onClick={() => toggleTodo(index)}>{todo.text}</span>
+                <button onClick={() => removeTodo(index)}>Remove</button>
+              </li>
+            ))}
+          </ul>
+          <div className="filter-container">
+            <button
+              className={filter === "All" ? "active" : ""}
+              onClick={() => setFilter("All")}
+            >
+              All
+            </button>
+            <button
+              className={filter === "Active" ? "active" : ""}
+              onClick={() => setFilter("Active")}
+            >
+              Active
+            </button>
+            <button
+              className={filter === "Completed" ? "active" : ""}
+              onClick={() => setFilter("Completed")}
+            >
+              Completed
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<TodoApp />, document.getElementById("root"));
+  </script>
+</html>
